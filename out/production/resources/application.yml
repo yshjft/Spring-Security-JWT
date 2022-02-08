@@ -1,0 +1,26 @@
+Spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/h2-data/SecurityJwt
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    open-in-view: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+    locale: en
+server:
+  error:
+    include-stacktrace: never
+    include-binding-errors: never
+

@@ -27,7 +27,7 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     List<UserRole> userRoles = new ArrayList<>();
 
     @Builder

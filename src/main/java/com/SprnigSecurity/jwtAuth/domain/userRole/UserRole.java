@@ -1,6 +1,5 @@
 package com.SprnigSecurity.jwtAuth.domain.userRole;
 
-import com.SprnigSecurity.jwtAuth.domain.BaseEntity;
 import com.SprnigSecurity.jwtAuth.domain.Role.Role;
 import com.SprnigSecurity.jwtAuth.domain.User.User;
 import lombok.Builder;
@@ -29,8 +28,7 @@ public class UserRole{
     @Builder
     public UserRole(User user, Role role) {
         this.user = user;
-        user.getUserRoles().add(this);
         this.role = role;
-        role.getUserRoles().add(this);
+        user.getUserRoles().add(this);
     }
 }

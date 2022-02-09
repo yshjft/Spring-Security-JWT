@@ -25,4 +25,5 @@ server:
   error:
     include-stacktrace: never
     include-binding-errors: never
-
+logging.level:
+  org.hibernate.type: trace

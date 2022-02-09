@@ -37,7 +37,7 @@ public class LogInterceptor implements HandlerInterceptor {
             log.info("[REQUEST {}] {} {}", uuid, method, uri);
         }else{
             log.error("[ERROR OF REQUEST {}] {} {}", uuid, method, uri);
-            log.error("[ERROR MESSAGE] {}", ex.getMessage());
+            log.error("[ERROR DETAILS] {}", ex.toString());
         }
     }
 }

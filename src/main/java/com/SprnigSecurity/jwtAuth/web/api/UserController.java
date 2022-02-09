@@ -27,7 +27,7 @@ public class UserController {
         return responseMap;
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/signUp")
     public ResponseEntity<Map> signUp(@RequestBody @Validated SignUp.RequestDto requestDto) {
         SignUp.ResponseDto responseDto = userService.signUpService(requestDto);
 

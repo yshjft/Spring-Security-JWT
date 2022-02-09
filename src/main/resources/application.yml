@@ -19,6 +19,8 @@ Spring:
     resources:
       add-mappings: false
     locale: en
+  profiles:
+    include: jwt
 server:
   error:
     include-stacktrace: never

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Component
 public class TokenProvider implements InitializingBean {
     private static final String AUTHORITIES_KEY = "AUTHORITIES";
-    private static final String USER_ID_KEY = "USER_ID";
+    private static final String USER_EMAIL_KEY = "USER_EMAIL";
 
     private final String secret;
     private final long tokenValidityInMs;
@@ -52,8 +52,8 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String createAccessToken(Authentication authentication) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal(); // id, 이메일, 권한 저장
-        String authorities = customUserDetails.getAuthorities().stream()
+        String userEmail = authentication.getName();
+        String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
@@ -65,8 +65,8 @@ public class TokenProvider implements InitializingBean {
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // token type
                 .setSubject("ACCESS_TOKEN") // 토큰의 제목
                 // payload
+                .claim(USER_EMAIL_KEY, userEmail)
                 .claim(AUTHORITIES_KEY, authorities)
-                .claim(USER_ID_KEY, customUserDetails.getId())
                 .setIssuedAt(now)
                 .setExpiration(expiredTime)
                 // signature
@@ -75,6 +75,7 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String createRefreshToken() {
+
         Date now = new Date();
         Date expiredTime = new Date(now.getTime() + this.refreshTokenValidityInMs);
 
@@ -95,13 +96,13 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
-        String userId = (String)claims.get(USER_ID_KEY);
+        String userEmail = (String)claims.get(USER_EMAIL_KEY);
         Collection<? extends  GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        User principal = new User(userId, "", authorities);
+        User principal = new User(userEmail, "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 

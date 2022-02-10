@@ -1,5 +1,6 @@
 package com.SprnigSecurity.jwtAuth.web.api;
 
+import com.SprnigSecurity.jwtAuth.service.RedisService;
 import com.SprnigSecurity.jwtAuth.service.auth.AuthService;
 import com.SprnigSecurity.jwtAuth.web.dto.auth.SignIn;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
+    private final RedisService redisService;
 
     private Map<String, Object> creatResponseMap(int status, String message) {
         Map<String, Object> responseMap = new LinkedHashMap<>();
@@ -33,12 +35,14 @@ public class AuthController {
     public ResponseEntity<Map> signIn(@RequestBody @Validated SignIn.RequestDto requestDto) {
         SignIn.TokenDto tokenDto = authService.signIn(requestDto);
 
+        redisService.setRefreshToken(requestDto.getEmail(), tokenDto.getRefreshToken(), 604800);
+
         Map<String, Object> responseMap = creatResponseMap(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase());
         responseMap.put("result", new SignIn.ResponseDto(tokenDto.getAccessToken()));
 
+        // 배포시 secure, domain 설정해야함
         ResponseCookie responseCookie = ResponseCookie.from("refreshToken", tokenDto.getRefreshToken())
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
                 .maxAge(604800)
                 .build();
@@ -49,6 +53,10 @@ public class AuthController {
     }
 
     // 리프레시
+    /*
+        accessToken, refreshToken(헤더)
+
+    */
 
     // 로그아웃
 }

@@ -1,10 +1,7 @@
 package com.SprnigSecurity.jwtAuth.jwt;
 
 import com.SprnigSecurity.jwtAuth.service.auth.CustomUserDetails;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,20 +28,10 @@ public class TokenProvider implements InitializingBean {
     private static final String AUTHORITIES_KEY = "AUTHORITIES";
     private static final String USER_EMAIL_KEY = "USER_EMAIL";
 
-    private final String secret;
-    private final long tokenValidityInMs;
-    private final long refreshTokenValidityInMs;
-
+    @Value("${jwt.secret}") private String secret;
+    @Value("${jwt.token-valid-second}") private long tokenValidityInMs;
+    @Value("${jwt.refresh-token-valid-second}") private long refreshTokenValidityInMs;
     private Key key;
-
-    public TokenProvider(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-valid-second}") long tokenValidityInMs,
-            @Value("${jwt.refresh-token-valid-second}") long refreshTokenValidityInMs) {
-        this.secret = secret;
-        this.tokenValidityInMs = tokenValidityInMs * 1000;
-        this.refreshTokenValidityInMs = refreshTokenValidityInMs * 1000;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -58,7 +46,7 @@ public class TokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         Date now = new Date();
-        Date expiredTime = new Date(now.getTime() + this.tokenValidityInMs);
+        Date expiredTime = new Date(now.getTime() + (this.tokenValidityInMs * 1000));
 
         return Jwts.builder()
                 // header
@@ -77,7 +65,7 @@ public class TokenProvider implements InitializingBean {
     public String createRefreshToken() {
 
         Date now = new Date();
-        Date expiredTime = new Date(now.getTime() + this.refreshTokenValidityInMs);
+        Date expiredTime = new Date(now.getTime() + (this.refreshTokenValidityInMs*1000));
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
@@ -89,12 +77,7 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = parseClaims(token);
 
         String userEmail = (String)claims.get(USER_EMAIL_KEY);
         Collection<? extends  GrantedAuthority> authorities =
@@ -106,12 +89,24 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public boolean validateToken(String token) {
+    private Claims parseClaims(String token) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    public boolean validateToken(String token, HttpServletRequest request, boolean ignoreExpired) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            return false;
+        } catch (ExpiredJwtException e) {
+            if(ignoreExpired) return true;
+            request.setAttribute("exception", "EXPIRED_TOKEN");
+        } catch (JwtException | IllegalArgumentException e) {
+            request.setAttribute("exception", "WRONG_TOKEN");
         }
+        return false;
     }
 }

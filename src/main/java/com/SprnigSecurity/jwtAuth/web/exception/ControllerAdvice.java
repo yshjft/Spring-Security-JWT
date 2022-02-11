@@ -1,8 +1,6 @@
 package com.SprnigSecurity.jwtAuth.web.exception;
 
-import com.SprnigSecurity.jwtAuth.web.exception.customException.DuplicateUserException;
-import com.SprnigSecurity.jwtAuth.web.exception.customException.LoginFailException;
-import com.SprnigSecurity.jwtAuth.web.exception.customException.UserNotFoundException;
+import com.SprnigSecurity.jwtAuth.web.exception.customException.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -52,5 +50,36 @@ public class ControllerAdvice {
         Map responseMap = createResponseMap(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), "40002");
         responseMap.put("error", new Error("login fail"));
         return new ResponseEntity<>(responseMap, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map> unauthorizedException(UnauthorizedException e) {
+        Map responseMap = createResponseMap(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), "40101");
+        responseMap.put("error", new Error("unauthorized access"));
+        return new ResponseEntity<>(responseMap, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<Map> expiredTokenException(ExpiredTokenException e) {
+        Map responseMap = createResponseMap(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), "40102");
+        responseMap.put("error", new Error("access token is expired. renew it."));
+
+        return new ResponseEntity<>(responseMap, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(WrongTokenException.class)
+    public ResponseEntity<Map> wrongTokenException(WrongTokenException e) {
+        Map responseMap = createResponseMap(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), "40103");
+        responseMap.put("error", new Error("wrong access token. login again."));
+
+        return new ResponseEntity<>(responseMap, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<Map> invalidRefreshTokenException(InvalidRefreshTokenException e) {
+        Map responseMap = createResponseMap(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), "40104");
+        responseMap.put("error", new Error("invalid refresh token. login again."));
+
+        return new ResponseEntity<>(responseMap, HttpStatus.UNAUTHORIZED);
     }
 }

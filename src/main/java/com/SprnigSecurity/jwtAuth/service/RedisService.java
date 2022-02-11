@@ -35,6 +35,14 @@ public class RedisService implements InitializingBean {
         valueOperations.set(key, refreshToken, expiredDuration);
     }
 
+    // delete refresh token
+    public void deleteRefreshToken(String userEmail) {
+        String key = refreshTokenNamespace + userEmail;
+        if(valueOperations.get(key) != null) {
+            redisTemplate.delete(key);
+        }
+    }
+
 
     // BLACK_LIST(token & refresh token)
 }

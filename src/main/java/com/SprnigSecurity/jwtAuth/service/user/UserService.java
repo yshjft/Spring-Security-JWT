@@ -1,4 +1,4 @@
-package com.SprnigSecurity.jwtAuth.service;
+package com.SprnigSecurity.jwtAuth.service.user;
 
 import com.SprnigSecurity.jwtAuth.domain.Role.Role;
 import com.SprnigSecurity.jwtAuth.domain.Role.RoleRepository;

@@ -63,7 +63,6 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String createRefreshToken() {
-
         Date now = new Date();
         Date expiredTime = new Date(now.getTime() + (this.refreshTokenValidityInMs*1000));
 
@@ -76,6 +75,13 @@ public class TokenProvider implements InitializingBean {
                 .compact();
     }
 
+    public Long getExpiration(String accessToken) {
+        Date expiration = parseClaims(accessToken).getExpiration();
+        Long now = new Date().getTime();
+
+        return (expiration.getTime() - now);
+    }
+
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
 
@@ -86,6 +92,7 @@ public class TokenProvider implements InitializingBean {
                         .collect(Collectors.toList());
 
         User principal = new User(userEmail, "", authorities);
+
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 

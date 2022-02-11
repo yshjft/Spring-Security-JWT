@@ -1,10 +1,8 @@
 package com.SprnigSecurity.jwtAuth.service.auth;
 
 import com.SprnigSecurity.jwtAuth.jwt.TokenProvider;
-import com.SprnigSecurity.jwtAuth.service.RedisService;
-import com.SprnigSecurity.jwtAuth.web.dto.auth.RefreshToken;
+import com.SprnigSecurity.jwtAuth.service.redis.RedisService;
 import com.SprnigSecurity.jwtAuth.web.dto.auth.RefreshToken.AccessTokenDto;
-import com.SprnigSecurity.jwtAuth.web.dto.auth.SignIn;
 import com.SprnigSecurity.jwtAuth.web.dto.auth.SignIn.TokenDto;
 import com.SprnigSecurity.jwtAuth.web.exception.customException.InvalidRefreshTokenException;
 import com.SprnigSecurity.jwtAuth.web.exception.customException.LoginFailException;
@@ -66,6 +64,15 @@ public class AuthService{
 
         String accessToken = tokenProvider.createAccessToken(authentication);
         return new AccessTokenDto(accessToken);
+    }
+
+    public void signOut() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        String accessToken = (String)authentication.getCredentials();
+
+        redisService.setBlackList(accessToken);
+        redisService.deleteRefreshToken(userEmail);
     }
 
     private String resolveRefreshToken() {

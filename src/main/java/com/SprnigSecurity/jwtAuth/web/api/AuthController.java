@@ -1,8 +1,7 @@
 package com.SprnigSecurity.jwtAuth.web.api;
 
-import com.SprnigSecurity.jwtAuth.service.RedisService;
+import com.SprnigSecurity.jwtAuth.service.redis.RedisService;
 import com.SprnigSecurity.jwtAuth.service.auth.AuthService;
-import com.SprnigSecurity.jwtAuth.web.dto.ResponseMap;
 import com.SprnigSecurity.jwtAuth.web.dto.auth.RefreshToken;
 import com.SprnigSecurity.jwtAuth.web.dto.auth.RefreshToken.AccessTokenDto;
 import com.SprnigSecurity.jwtAuth.web.dto.auth.SignIn;
@@ -62,10 +61,20 @@ public class AuthController {
                 .body(responseMap);
     }
 
-//     로그아웃
-//    @PostMapping("/signOut")
-//    public ResponseEntity<Map> signOut() {
-//        // authentication 객체에 대한 문제....
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    }
+    @PostMapping("/signOut")
+    public ResponseEntity<Map> signOut() {
+        authService.signOut();
+
+        Map<String, Object> responseMap = creatResponseMap(HttpStatus.OK.value(), "logout success");
+
+        ResponseCookie responseCookie = ResponseCookie.from(refreshToken, null)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .body(responseMap);
+    }
 }

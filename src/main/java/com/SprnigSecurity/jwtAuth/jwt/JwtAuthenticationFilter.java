@@ -2,6 +2,8 @@ package com.SprnigSecurity.jwtAuth.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -21,6 +23,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final TokenProvider tokenProvider;
+    private final RedisTemplate redisTemplate;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -32,9 +35,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }
 
         String jwt = resolveToken(httpServletRequest);
-        boolean ignoreExpired = httpServletRequest.getRequestURI().equals("/api/auth/refreshToken") ? true : false;
+        boolean ignoreExpired = httpServletRequest.getRequestURI().equals("/api/auth/refreshToken");
 
-        if(hasText(jwt) && tokenProvider.validateToken(jwt, httpServletRequest, ignoreExpired)) {
+        if(hasText(jwt)
+                && tokenProvider.validateToken(jwt, httpServletRequest, ignoreExpired)
+                && redisTemplate.opsForValue().get("SECURITY_JWT_BLACK_LIST:"+jwt) == null
+        ) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

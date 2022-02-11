@@ -3,6 +3,8 @@ Spring:
     host: localhost
     port: 6379
     password:
+    refresh-token-namespace: "SECURITY_JWT_REFRESH_TOKEN:"
+    black-list-namespace: "SECURITY_JWT_BLACK_LIST:"
   datasource:
     url: jdbc:h2:tcp://localhost/~/h2-data/SecurityJwt
     driver-class-name: org.h2.Driver

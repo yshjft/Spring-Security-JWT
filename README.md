@@ -77,7 +77,7 @@ Spring Security와 JWT를 이용하여 간단한 인증 api를 구현해보았�
     ```
 
 
-* Sign In
+* Sign In   
 [POST] /api/auth/signIn
     * REQUEST
     ```
@@ -97,7 +97,8 @@ Spring Security와 JWT를 이용하여 간단한 인증 api를 구현해보았�
     }
     ```
 
-* refresh token    
+* refresh token   
+[POST] /api/auth/refreshToken
     * REQUEST
     ```
     [Request Header]
@@ -116,7 +117,8 @@ Spring Security와 JWT를 이용하여 간단한 인증 api를 구현해보았�
     }
     ```
 
-* sign out
+* sign out   
+[POST] /api/auth/signOut
     * REQUEST
     ```
     [Request Header]
@@ -132,4 +134,16 @@ Spring Security와 JWT를 이용하여 간단한 인증 api를 구현해보았�
     }
     ```
   
+* for authentication check
+  * REQUEST(authentication ⭕️)   
+  [GET] /api/test/withAuth
+  ```
+  [Request Header]
+  Cookie : refreshToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBQ0NFU1NfVE9LRU4iLCJVU0VSX0VNQUlMIjoiamVycnlAdGVzdC5jb20iLCJBVVRIT1JJVElFUyI6IlJPTEVfVVNFUiIsImlhdCI6MTY0NDU3MzcwNCwiZXhwIjoxNjQ0NTc3MzA0fQ.Q9tHXygfcCssInkTsytH7PBNbtOZrfGpmoPXgaH1BuoFd6rFAMD7A-p540nWRN8ducmDQQMoKNJvOHs3OqSsFw 
+  Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBQ0NFU1NfVE9LRU4iLCJVU0VSX0VNQUlMIjoiamVycnlAdGVzdC5jb20iLCJBVVRIT1JJVElFUyI6IlJPTEVfVVNFUiIsImlhdCI6MTY0NDU3NTMyMywiZXhwIjoxNjQ0NTc4OTIzfQ.Oinp6aHgTimk3v0Cmt6ILJhnMDs1HHwdinxJuuDo93xEhGrIw_UhVSGdLqYYnZ2boOa0B8dq_WgighGcRNgR_g
+  ```
+
+  * REQUEST(authentication ❌)   
+  [GET] /api/test/withoutAuth
+
 

@@ -25,7 +25,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUserWithRolesByEmail(email).orElseThrow(() -> new UserNotFoundException());
 
-        // 쿼리가 더 날라갈 듯 → 수정 필요
         List<GrantedAuthority> grantedAuthorities = user.getUserRoles().stream()
                 .map(userRole -> new SimpleGrantedAuthority(userRole.getRole().getRole()))
                 .collect(Collectors.toList());

@@ -135,6 +135,9 @@ Spring Security와 JWT를 이용하여 간단한 인증 api를 구현해보았�
     ```
   
 * for authentication check
+  * REQUEST(authentication ❌)   
+    [GET] /api/test/withoutAuth
+
   * REQUEST(authentication ⭕️)   
   [GET] /api/test/withAuth
   ```
@@ -143,7 +146,6 @@ Spring Security와 JWT를 이용하여 간단한 인증 api를 구현해보았�
   Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBQ0NFU1NfVE9LRU4iLCJVU0VSX0VNQUlMIjoiamVycnlAdGVzdC5jb20iLCJBVVRIT1JJVElFUyI6IlJPTEVfVVNFUiIsImlhdCI6MTY0NDU3NTMyMywiZXhwIjoxNjQ0NTc4OTIzfQ.Oinp6aHgTimk3v0Cmt6ILJhnMDs1HHwdinxJuuDo93xEhGrIw_UhVSGdLqYYnZ2boOa0B8dq_WgighGcRNgR_g
   ```
 
-  * REQUEST(authentication ❌)   
-  [GET] /api/test/withoutAuth
+  
 
 

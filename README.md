@@ -12,7 +12,7 @@ Spring Security와 JWT를 이용하여 간단한 인증 api를 구현해보았�
 
 * 로그인을 하면 access token과 refresh token을 발급합니다.
   * access token은 30분, refresh token은 7주일로 만료 시간을 설정합니다.
-  * refresh token은 redis에 저장됩니다. 장동 제거 시간은 토큰의 만료시간과 동일하게 설정합니다.
+  * refresh token은 redis에 저장됩니다. 자동 제거 시간은 토큰의 만료시간과 동일하게 설정합니다.
   * access token은 request body로 refresh token은 Set-Cookie 헤더로 전송합니다.
 
 
